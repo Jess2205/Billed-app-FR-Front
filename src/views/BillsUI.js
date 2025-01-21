@@ -19,9 +19,22 @@ const row = (bill) => {
     `)
   }
 
-const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
-}
+  const rows = (data) => {
+    
+    if (data && data.length) {
+      console.log("Factures avant tri :", data.map(bill => bill.date));//Ajout consol log avant tri
+      
+      const sortedData = data.sort((x, y) => new Date(y.date) - new Date(x.date));//Ajout Méthode Sort
+      console.log("Factures après tri :", sortedData.map(bill => bill.date));//Ajout consol log après tri
+      
+      return sortedData
+        .map((bill) => row(bill))
+        .join("");
+    } else {
+      console.log("Aucune donnée trouvée pour les factures.");//Ajout consol log
+      return "";
+    }
+  }
 
 export default ({ data: bills, loading, error }) => {
   
