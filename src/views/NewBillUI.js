@@ -57,8 +57,8 @@ export default () => {
                     <label for="file" class="bold-label">Justificatif</label>
                     <input required type="file" class="form-control blue-border" data-testid="file" />
                     <!-- Message d'erreur caché par défaut -->
-                    <p class="error-message" style="display: none; color: red; font-size: 12px;"</p>
-                    Le fichier doit être au format JPG, JPEG ou PNG.
+                    <p class="error-message" data-testid="fileFormat-errorMessage">
+                     Format de fichier invalide. Seuls les fichiers JPG, JPEG ou PNG sont autorisés.
                   </div>
                 </div>
             </div>
