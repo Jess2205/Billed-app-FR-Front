@@ -61,7 +61,7 @@ describe("Given I am connected as an employee", () => {
     });
 
     test("Then each action eye icon click should open an image modal", async () => {
-      // Naviguer vers la page des factures
+      // Naviguer vers la page Bills
       window.onNavigate(ROUTES_PATH.Bills);
 
       // Initialisation de la page Bills
@@ -145,14 +145,14 @@ describe("Given I am on Bills page", () => {
 
 // Test d'intégration GET
 describe("Given I am a user connected as Employee", () => {
-  // Contexte : Navigation vers la page des factures
+  // Contexte : Navigation vers la page des Bills
   describe("When I navigate to Bills page", () => {
-    // Test pour vérifier que les factures sont récupérées depuis l'API mockée
+    // Test pour vérifier que les notes de frais sont récupérées depuis l'API mockée
     test("fetches bills from mock API GET", async () => {
       // Espionner la méthode "bills" du mockStore
       jest.spyOn(mockStore, "bills");
 
-      // Mock de l'implémentation de la méthode "list" pour retourner une facture simulée
+      // Mock de l'implémentation de la méthode "list" pour retourner une note de frais simulée
       mockStore.bills.mockImplementationOnce(() => {
         return {
           list: () =>
@@ -180,7 +180,7 @@ describe("Given I am a user connected as Employee", () => {
       root.setAttribute("id", "root");
       document.body.append(root);
 
-      // Initialiser le routeur et naviguer vers la page des factures
+      // Initialiser le routeur et naviguer vers la page Bills
       router();
       window.onNavigate(ROUTES_PATH.Bills);
       
@@ -189,7 +189,7 @@ describe("Given I am a user connected as Employee", () => {
       // Attendre que le texte "Mes notes de frais" soit visible
       await waitFor(() => screen.getByText("Mes notes de frais"));
 
-      // Vérifier qu'un contenu correspondant à une facture est affiché
+      // Vérifier qu'un contenu correspondant à une note de frais est affiché
       const contentPending = await screen.getByText("Hôtel et logement");
       expect(contentPending).toBeTruthy(); // Vérifie que le texte est bien présent
     });
