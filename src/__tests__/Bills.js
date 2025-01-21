@@ -255,3 +255,102 @@ describe("Given I am a user connected as Employee", () => {
     });
   });
 });
+
+describe("Given I am a user connected as Employee", () => {
+  // Sous-catégorie pour tester les erreurs liées à la fonction formatDate
+  describe("When the formatDate function throws an error", () => {
+    
+    test("Then it should log the error and return the unformatted date", async () => {
+      // Spy pour surveiller les appels à console.log
+      const consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
+
+      // Mock de `formatDate` pour simuler une exception
+      const mockFormatDate = jest.fn(() => {
+        throw new Error("Invalid date"); // Simule une erreur "Invalid date"
+      });
+
+      // Objet représentant une facture corrompue (date invalide)
+      const corruptedBill = {
+        id: "1",
+        date: "invalid-date", // Date invalide pour provoquer l'erreur
+        status: "pending",
+        type: "Hôtel et logement",
+        amount: 400,
+        commentary: "",
+        pct: 20,
+        name: "encore",
+      };
+
+      // Mock du store pour retourner la facture corrompue
+      mockStore.bills.mockImplementationOnce(() => ({
+        list: () => Promise.resolve([corruptedBill]), // Retourne une facture corrompue
+      }));
+
+      // Prépare le DOM pour inclure l'élément racine
+      const root = document.createElement("div");
+      root.setAttribute("id", "root");
+      document.body.append(root);
+      router(); // Configure le routeur de l'application
+
+      // Simule la navigation vers la page Bills
+      window.onNavigate(ROUTES_PATH.Bills);
+
+      // Attend que les factures soient affichées dans l'interface
+      await waitFor(() => screen.getByText("Mes notes de frais"));
+
+      // Vérifie que l'erreur a bien été loguée avec les bons paramètres
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.any(Error), "for", corruptedBill);
+
+      // Nettoie le spy pour éviter des interférences dans d'autres tests
+      consoleLogSpy.mockRestore();
+    });
+  });
+
+  // Test pour vérifier la gestion d'une erreur 404 lors de l'appel à l'API
+  test("fetches bills from an API and fails with 404 message error", async () => {
+    // Mock du store pour simuler une erreur 404
+    mockStore.bills.mockImplementationOnce(() => {
+      return {
+        list: () => {
+          return Promise.reject(new Error("Erreur 404")); // Simule une erreur 404
+        },
+      };
+    });
+
+    let response;
+    try {
+      response = await mockStore.bills().list(); // Tente de récupérer les factures
+    } catch (err) {
+      response = err; // Capture l'erreur
+    }
+
+    // Affiche un message d'erreur dans le DOM
+    document.body.innerHTML = BillsUI({ error: response });
+    const message = screen.getByText(/Erreur 404/); // Vérifie si le message "Erreur 404" est affiché
+    expect(message).toBeTruthy(); // Assertion pour confirmer la présence du message
+  });
+
+  // Test pour vérifier la gestion d'une erreur 500 lors de l'appel à l'API
+  test("fetches messages from an API and fails with 500 message error", async () => {
+    // Mock du store pour simuler une erreur 500
+    mockStore.bills.mockImplementationOnce(() => {
+      return {
+        list: () => {
+          return Promise.reject(new Error("Erreur 500")); // Simule une erreur 500
+        },
+      };
+    });
+
+    let response;
+    try {
+      response = await mockStore.bills().list(); // Tente de récupérer les factures
+    } catch (err) {
+      response = err; // Capture l'erreur
+    }
+
+    // Affiche un message d'erreur dans le DOM
+    document.body.innerHTML = BillsUI({ error: response });
+    const message = screen.getByText(/Erreur 500/); // Vérifie si le message "Erreur 500" est affiché
+    expect(message).toBeTruthy(); // Assertion pour confirmer la présence du message
+  });
+});
