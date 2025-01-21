@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { screen } from "@testing-library/dom"
+import { screen, fireEvent } from "@testing-library/dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 
@@ -73,4 +73,35 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
     // Vérification que la méthode handleSubmit a bien été appelée
     expect(handleSubmit).toHaveBeenCalled();
   });
+});
+  // Test pour vérifier le comportement en cas de téléchargement d'un fichier avec un format invalide
+  test("When I upload a file with invalid format, then an error message should be displayed", () => {
+  // Charger l'interface utilisateur du formulaire NewBill
+  document.body.innerHTML = NewBillUI();
+
+  // Mock du store pour éviter de faire des appels réels à l'API
+  const store = { bills: jest.fn() };
+
+  // Création d'une instance de la classe NewBill avec les paramètres nécessaires
+  const newBill = new NewBill({ document, store });
+
+  // Récupération de l'élément d'entrée de fichier depuis le DOM simulé
+  const fileInput = screen.getByTestId("file");
+
+  // Création d'un fichier au format invalide (exemple : fichier texte)
+  const file = new File(["dummy content"], "example.txt", { type: "text/plain" });
+
+  // Simulation d'un événement de changement sur l'entrée de fichier, avec le fichier invalide comme cible
+  fireEvent.change(fileInput, { target: { files: [file] } });
+
+  // Vérification que le fichier est bien sélectionné et que son nom correspond à celui défini
+  expect(fileInput.files[0].name).toBe("example.txt");
+
+  // Vérification que le message d'erreur est bien affiché dans le DOM
+  const errorMessage = screen.getByText(
+    "Format de fichier invalide. Seuls les fichiers JPG, JPEG ou PNG sont autorisés."
+  );
+
+  // Assertion : le message d'erreur doit être visible
+  expect(errorMessage).toBeVisible();
 });
