@@ -16,30 +16,68 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate })
   }
   handleChangeFile = e => {
-    e.preventDefault()
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-    const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1]
-    const formData = new FormData()
-    const email = JSON.parse(localStorage.getItem("user")).email
-    formData.append('file', file)
-    formData.append('email', email)
+    e.preventDefault();
 
-    this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true
+    // Cache tout message d'erreur au début
+    const errorMessage = document.querySelector(".error-message");
+    errorMessage.style.display = "none"; // Masque l'erreur par défaut
+
+    // Modification : Change 'this.document' en 'document' pour accéder au DOM correctement
+    const fileInput = e.target;
+    const file = fileInput.files[0]; // récupère le fichier sélectionné
+
+    // Vérification de l'existence du fichier
+    if (file) {
+        const filePath = e.target.value.split(/\\/g); // Extrait le nom du fichier depuis le chemin
+        const fileName = filePath[filePath.length - 1]; // Dernière partie du chemin
+        console.log("Nom du fichier : ", fileName);
+
+        // Modification : Extraction de l'extension du fichier en minuscule pour la comparaison
+        const fileExtension = fileName.split(".").pop().toLowerCase(); // Extrait et met en minuscule l'extension
+        console.log("Extension du fichier : ", fileExtension); // Vérifie l'extension
+
+        // Extensions autorisées
+        const allowedExtensions = ["jpg", "jpeg", "png"];
+
+        // Modification : Vérifier si l'extension est valide
+        if (!allowedExtensions.includes(fileExtension)) {
+            console.log("Extension invalide"); // Débogage pour voir si l'extension est invalide
+            errorMessage.style.display = "block"; // Affiche le message d'erreur
+            fileInput.value = ""; // Réinitialise l'input file
+            return; // Sort de la fonction pour bloquer l'envoi du fichier
         }
-      })
-      .then(({fileUrl, key}) => {
-        console.log(fileUrl)
-        this.billId = key
-        this.fileUrl = fileUrl
-        this.fileName = fileName
-      }).catch(error => console.error(error))
-  }
+
+        // Si l'extension est valide, masque le message d'erreur
+        errorMessage.style.display = "none"; // Masque l'erreur
+
+        // Création du formulaire de données pour l'upload
+        const formData = new FormData();
+        const email = JSON.parse(localStorage.getItem("user")).email; // Récupère l'email de l'utilisateur
+        formData.append("file", file);
+        formData.append("email", email);
+
+        // Envoi du fichier au serveur
+        this.store
+            .bills()
+            .create({
+                data: formData,
+                headers: {
+                    noContentType: true,
+                },
+            })
+            .then(({ fileUrl, key }) => {
+                console.log(fileUrl);
+                this.billId = key;
+                this.fileUrl = fileUrl;
+                this.fileName = fileName;
+            })
+            .catch((error) => console.error(error));
+    } else {
+        console.log("Aucun fichier sélectionné"); // Débogage si aucun fichier n'est sélectionné
+        errorMessage.style.display = "block"; // Affiche le message d'erreur si aucun fichier
+    }
+};
+
   handleSubmit = e => {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
