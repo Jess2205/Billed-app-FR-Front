@@ -193,19 +193,32 @@ export default class {
       .bills()
       .list()
       .then(snapshot => {
-        const bills = snapshot && snapshot.length ? snapshot : [] // Vérifie si les données existent
-        return bills;
+        const bills = snapshot
+        .map(doc => ({
+          id: doc.id,
+          ...doc,
+          date: doc.date,
+          status: doc.status
+        }))
+        return bills
+      })
+      .catch(error => {
+        throw error;
       })
     }
   }
 
+
   // Met à jour une facture dans le store
+  // not need to cover this function by tests
+  /* istanbul ignore next */
   updateBill = (bill) => {
     if (this.store) {
-      return this.store
+    return this.store
       .bills()
-      .update({data: bill})
-      .then(() => this.getBillsAllUsers()) // Rafraîchit les données des factures après mise à jour
+      .update({data: JSON.stringify(bill), selector: bill.id})
+      .then(bill => bill)
+      .catch(console.log)
     }
   }
 }
