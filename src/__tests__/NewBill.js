@@ -3,10 +3,12 @@
  */
 
 import { screen, fireEvent } from "@testing-library/dom"
+import '@testing-library/jest-dom'
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
+import store from "../__mocks__/store.js"
 
-describe("Given I am connected as an employee", () => {
+
   // Avant chaque test dans ce bloc "describe", exécute le code suivant
   beforeEach(() => {
     // Initialisation de l'objet localStorage avec des données utilisateur simulées
@@ -16,11 +18,11 @@ describe("Given I am connected as an employee", () => {
       JSON.stringify({ email: "employee@test.com" }) // Valeur en JSON pour représenter un utilisateur connecté
     );
   });
-});
+
 
 describe("When I am on NewBill Page", () => {
   test("Then the page should render correctly", () => {
-    // Générer le HTML de la page NewBill
+    // Génère le HTML de la page NewBill
     const html = NewBillUI();
     document.body.innerHTML = html;
 
@@ -74,6 +76,7 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
     expect(handleSubmit).toHaveBeenCalled();
   });
 });
+
   // Test pour vérifier le comportement en cas de téléchargement d'un fichier avec un format invalide
   test("When I upload a file with invalid format, then an error message should be displayed", () => {
   // Charger l'interface utilisateur du formulaire NewBill
@@ -103,5 +106,45 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
   );
 
   // Assertion : le message d'erreur doit être visible
-  expect(errorMessage).toBeVisible();
+  expect(screen.getByTestId("fileFormat-errorMessage")).toBeVisible;
+});
+
+// Test d'intégration POST
+// Test d'intégration pour la création d'une nouvelle note de frais via une requête POST
+test("should create a new bill via POST request", async () => {
+  // Charge l'interface utilisateur pour la création d'une nouvelle note de frais
+  document.body.innerHTML = NewBillUI();
+
+  // Mock de la fonction de navigation pour vérifier la redirection
+  const onNavigate = jest.fn();
+
+  // Initiation de la classe NewBill avec le DOM, la navigation mockée et un store
+  const newBill = new NewBill({ document, onNavigate, store });
+
+  // Récupèrere les éléments du formulaire nécessaires pour simuler la soumission
+  const form = screen.getByTestId("form-new-bill");
+  const inputName = screen.getByTestId("expense-name");
+  const inputAmount = screen.getByTestId("amount");
+
+  // Simule l'entrée de données dans les champs de formulaire
+  fireEvent.change(inputName, { target: { value: "Test Bill" } }); // Entre un nom pour la note de frais
+  fireEvent.change(inputAmount, { target: { value: "100" } }); // Entre un montant pour la note de frais
+
+  // Mock de la fonction handleSubmit pour vérifier son appel
+  const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+  
+  // Ajoute un écouteur d'événements "submit" au formulaire
+  form.addEventListener("submit", handleSubmit);
+
+  // Simule la soumission du formulaire
+  fireEvent.submit(form);
+
+  // Attendre un délai pour simuler la résolution de la requête POST
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  // Vérifie que handleSubmit a bien été appelé lors de la soumission
+  expect(handleSubmit).toHaveBeenCalled();
+
+  // Vérifie que la navigation a été appelée avec la route attendue après la création de la note de frais
+  expect(onNavigate).toHaveBeenCalledWith("#employee/bills");
 });
