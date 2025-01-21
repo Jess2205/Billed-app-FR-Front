@@ -9,6 +9,7 @@ import BillsUI from "../views/BillsUI.js";
 import { bills } from "../fixtures/bills.js";
 import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
+import Bills from "../containers/Bills.js";
 
 import router from "../app/Router.js";
 
@@ -91,6 +92,38 @@ describe("Given I am connected as an employee", () => {
       // Attendre que l'erreur apparaisse
       await waitFor(() => expect(screen.getByText("Erreur")).toBeTruthy());
       await waitFor(() => expect(screen.getByText(error)).toBeTruthy());
+    });
+  });
+});
+
+describe("Given I am on Bills page", () => {
+  // Bloc décrivant le comportement lorsque l'utilisateur clique sur le bouton 'New Bill'
+  describe("When I click on the 'New Bill' button", () => {
+    // Test pour vérifier si la navigation vers la page 'NewBill' fonctionne
+    test("Then it should navigate to the 'NewBill' page", () => {
+      // Mock de la fonction de navigation
+      const onNavigateMock = jest.fn();
+
+      // Création d'un document HTML simulé contenant un bouton 'New Bill'
+      const documentMock = document.createElement("div");
+      documentMock.innerHTML = `<button data-testid="btn-new-bill"></button>`;
+
+      // Instanciation de la classe Bills avec des objets mockés
+      const bills = new Bills({
+        document: documentMock,         // Le document HTML simulé
+        onNavigate: onNavigateMock,    // La fonction mockée de navigation
+        store: null,                   // Aucun store n'est nécessaire pour ce test
+        localStorage: window.localStorage, // LocalStorage simulé
+      });
+
+      // Récupération du bouton 'New Bill' dans le document simulé
+      const buttonNewBill = documentMock.querySelector(`[data-testid="btn-new-bill"]`);
+
+      // Simulation d'un clic sur le bouton
+      buttonNewBill.click();
+
+      // Vérification que la fonction de navigation a été appelée avec la route 'NewBill'
+      expect(onNavigateMock).toHaveBeenCalledWith(ROUTES_PATH['NewBill']);
     });
   });
 });
