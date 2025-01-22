@@ -17,11 +17,11 @@ export default () => {
             <div class="card">
               <div class="card-body">
                 <form class="form-signin" data-testid="form-employee">
-                  <h2 class="h3 mb-3 font-weight-normal">Employé</h1>
-                  <label for="inputEmail">Votre email</label>
-                  <input type="email" data-testid="employee-email-input" class="form-control" placeholder="johndoe@email.com" required autofocus>
-                  <label for="inputPassword">Mot de passe</label>
-                  <input type="password" data-testid="employee-password-input" class="form-control" placeholder="******" required>
+                  <h2 class="h3 mb-3 font-weight-normal">Employé</h2>
+                  <label for="employee-email-input" data-testid="employee-email-input">Votre email</label>
+                  <input id="employee-email-input" name="employee-email" type="email" data-testid="employee-email-input" class="form-control" placeholder="employee-email-input" required autofocus autocomplete="username">
+                  <label for="employee-password-input" data-testid="employee-password-input">Mot de passe</label>
+                  <input id="employee-password-input" name="employee-password" type="password" data-testid="employee-password-input" class="form-control" placeholder="employee-password-input" required autocomplete="current-password">
                   <button class="btn btn-lg btn-primary btn-block" data-testid="employee-login-button" style="background-color: #0E5AE5;" type="submit">Se connecter</button>
                 </form>
               </div>
@@ -30,12 +30,12 @@ export default () => {
           <div class="col-sm-6">
             <div class="card">
               <div class="card-body">
-                <form class="form-signin" data-testid="form-admin">
-                  <h2 class="h3 mb-3 font-weight-normal">Administration</h1>
-                  <label for="inputEmail">Votre email</label>
-                  <input type="email" data-testid="admin-email-input" class="form-control" placeholder="johndoe@email.com" required autofocus>
-                  <label for="inputPassword">Mot de passe</label>
-                  <input type="password" data-testid="admin-password-input" class="form-control" placeholder="******" required>
+                <form class="form-signin"  data-testid="form-admin">
+                  <h2 class="h3 mb-3 font-weight-normal">Administration</h2>
+                  <label for="admin-email-input" data-testid="admin-email-input">Votre email</label>
+                  <input id= "admin-email-input" name="admin-email" type="email" data-testid="admin-email-input" class="form-control" placeholder="admin-email-input" required autofocus autocomplete="username">
+                  <label for="admin-password-input" data-testid="admin-password-input">Mot de passe</label>
+                  <input id="admin-password-input" name="admin-password" type="password" data-testid="admin-password-input" class="form-control" placeholder="admin-password-input" required autocomplete="current-password">
                   <button  type="submit" class="btn btn-lg btn-primary btn-block" data-testid="admin-login-button" style="background-color: #0E5AE5;">Se connecter</button>
                 </form>
               </div>
@@ -45,4 +45,5 @@ export default () => {
       </div>
   `)
 }
-  
+
+ 
