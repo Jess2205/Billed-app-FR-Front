@@ -60,7 +60,7 @@ export default class NewBill {
             console.log(fileUrl);
             this.billId = key;
             this.fileUrl = fileUrl;
-            this.fileName = fileName;
+            this.fileName = file.name;
         })
         .catch((error) => console.error(error));
 };
