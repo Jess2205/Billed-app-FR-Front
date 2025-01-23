@@ -105,7 +105,7 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
   );
 
   // Assertion : le message d'erreur doit être visible
-  expect(screen.getByTestId("fileFormat-errorMessage")).toBeVisible;
+  expect(screen.getByTestId("fileFormat-errorMessage")).toBeVisible();
 
   });
   test("When I upload a valid file, then the error message should be hidden and the file should be sent to the API", async () => {
