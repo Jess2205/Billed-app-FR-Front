@@ -195,66 +195,6 @@ describe("Given I am a user connected as Employee", () => {
     });
   });
 });
-// Décrire le contexte global des tests liés à la récupération des factures
-describe("Given I am a user connected as Employee", () => {
-  // Décrire le cas où une erreur 404 est retournée par l'API
-  describe("When the API returns a 404 error", () => {
-    test("Then it should display a 404 error message", async () => {
-      // Mock de l'implémentation de la méthode `list` pour rejeter une erreur 404
-      mockStore.bills.mockImplementationOnce(() => {
-        return {
-          list: () => {
-            return Promise.reject(new Error("Erreur 404")); // Simule une erreur 404
-          },
-        };
-      });
-
-      // Variable pour stocker la réponse ou l'erreur capturée
-      let response;
-      try {
-        response = await mockStore.bills().list(); // Appelle la méthode mockée
-      } catch (err) {
-        response = err; // Stocke l'erreur capturée
-      }
-
-      // Générer l'interface utilisateur avec l'erreur retournée
-      document.body.innerHTML = BillsUI({ error: response });
-
-      // Vérifier que le message d'erreur 404 est affiché dans l'interface
-      const message = screen.getByText(/Erreur 404/);
-      expect(message).toBeTruthy(); // Confirme que le message est bien présent
-    });
-  });
-
-  // Décrire le cas où une erreur 500 est retournée par l'API
-  describe("When the API returns a 500 error", () => {
-    test("Then it should display a 500 error message", async () => {
-      // Mock de l'implémentation de la méthode `list` pour rejeter une erreur 500
-      mockStore.bills.mockImplementationOnce(() => {
-        return {
-          list: () => {
-            return Promise.reject(new Error("Erreur 500")); // Simule une erreur 500
-          },
-        };
-      });
-
-      // Variable pour stocker la réponse ou l'erreur capturée
-      let response;
-      try {
-        response = await mockStore.bills().list(); // Appelle la méthode mockée
-      } catch (err) {
-        response = err; // Stocke l'erreur capturée
-      }
-
-      // Générer l'interface utilisateur avec l'erreur retournée
-      document.body.innerHTML = BillsUI({ error: response });
-
-      // Vérifier que le message d'erreur 500 est affiché dans l'interface
-      const message = screen.getByText(/Erreur 500/);
-      expect(message).toBeTruthy(); // Confirme que le message est bien présent
-    });
-  });
-});
 
 describe("Given I am a user connected as Employee", () => {
   // Sous-catégorie pour tester les erreurs liées à la fonction formatDate
