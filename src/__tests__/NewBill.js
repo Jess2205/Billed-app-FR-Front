@@ -75,7 +75,6 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
     // Vérification que la méthode handleSubmit a bien été appelée
     expect(handleSubmit).toHaveBeenCalled();
   });
-});
 
   // Test pour vérifier le comportement en cas de téléchargement d'un fichier avec un format invalide
   test("When I upload a file with invalid format, then an error message should be displayed", () => {
@@ -107,7 +106,44 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
 
   // Assertion : le message d'erreur doit être visible
   expect(screen.getByTestId("fileFormat-errorMessage")).toBeVisible;
-});
+
+  });
+  test("When I upload a valid file, then the error message should be hidden and the file should be sent to the API", async () => {
+    document.body.innerHTML = NewBillUI();
+  
+    const newBill = new NewBill({ document, store });
+    const fileInput = screen.getByTestId("file");
+  
+    // Création d'un fichier valide (format JPG)
+    const validFile = new File(["dummy content"], "example.jpg", { type: "image/jpeg" });
+  
+    // Mock de la méthode create dans mockedBills
+    const mockedBills = newBill.store.bills();
+    const createBillMock = jest.spyOn(mockedBills, "create").mockResolvedValue({
+      fileUrl: "https://localhost:3456/images/test.jpg",
+      key: "1234",
+    });
+  
+    // Simulation de l'événement de changement de fichier
+    fireEvent.change(fileInput, { target: { files: [validFile] } });
+  
+    // Attendre un peu pour s'assurer que la promesse est résolue
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+    // Vérifier que la méthode create a été appelée avec les bons arguments
+    expect(createBillMock).toHaveBeenCalledWith({
+      data: expect.any(FormData),
+      headers: { noContentType: true },
+    });
+  
+    // Vérification de la mise à jour des propriétés fileUrl, fileName et billId
+    expect(newBill.fileUrl).toBe("https://localhost:3456/images/test.jpg");
+    expect(newBill.fileName).toBe("example.jpg");
+    expect(newBill.billId).toBe("1234");
+  });
+  
+})  
+
 
 // Test d'intégration POST
 // Test d'intégration pour la création d'une nouvelle note de frais via une requête POST
